@@ -1,0 +1,10 @@
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const scripts=[...html.matchAll(/<script src="([^"]+)"/g)].map(x=>x[1]),styles=[...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map(x=>x[1]);
+assert.equal(scripts.length,1,'single atomic script');assert.equal(styles.length,1,'single stylesheet');
+const thumbs=fs.readdirSync(path.join(root,'assets/collection/thumbs')).filter(x=>x.endsWith('.webp'));
+const sizes=thumbs.map(x=>fs.statSync(path.join(root,'assets/collection/thumbs',x)).size),total=sizes.reduce((a,b)=>a+b,0);
+assert.equal(thumbs.length,47,'one thumbnail per exhibit');assert(total<1_800_000,'thumbnail payload budget');assert(Math.max(...sizes)<80_000,'individual thumbnail budget');
+const bundle=fs.statSync(path.join(root,scripts[0])).size,css=fs.statSync(path.join(root,styles[0])).size;
+assert(bundle<350_000,'script budget');assert(css<40_000,'stylesheet budget');
+console.log(JSON.stringify({thumbnails:thumbs.length,thumbnailMB:+(total/1e6).toFixed(2),largestThumbnailKB:+(Math.max(...sizes)/1000).toFixed(1),scriptKB:+(bundle/1000).toFixed(1),styleKB:+(css/1000).toFixed(1),status:'passed'}));

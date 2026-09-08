@@ -23,6 +23,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Validate release
+        run: |
+          node scripts/build-release.cjs
+          git diff --exit-code
+          node scripts/validate.cjs
+          node scripts/verify-navigation.cjs
+          node scripts/performance-budget.cjs
+          node scripts/verify-spatial.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site

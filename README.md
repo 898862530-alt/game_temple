@@ -1,17 +1,9 @@
 # Game Temple 游戏圣殿
 
-一座收藏改变游戏媒介之作的数字博物馆。当前收录 47 件展品，包含珍藏柜、历史时间线、入馆标准、逐作长篇原创评论，以及可交互的三维博物馆与《死亡搁浅》主题展区。
+[进入游戏圣殿](https://898862530-alt.github.io/game_temple/) · [版本记录](CHANGELOG.md)
 
-- 公开访问：https://898862530-alt.github.io/game_temple/
-- Sites：https://game-temple.oceanflashzhang.chatgpt.site
-- 年度游戏：2006–2025 年完整序列；2006–2012 VGA、2013 VGX、2014–2025 TGA。
-- 历史里程碑：以具体设计、技术和文化贡献说明入馆理由。
-- Ocean 精选：金色专属标签，本馆最高个人收藏荣誉，仅由 Ocean 指定。
-- 图片随仓库部署到 assets/collection，保留来源与实际像素，不依赖第三方热链。
-- 技术结构：无需构建的 HTML / CSS / JavaScript，使用相对路径兼容 GitHub Pages 子目录。
+以博物馆方式收藏游戏史的重要作品：47 件馆藏、原创专业评论与可探索空间展览。
 
-## 同步约定
+当前版本 **v1.1.0 · 物件与世界**。空间展馆从梯子与传送门进入《死亡搁浅》展厅，支持惯性移动、走进荒野及纪念照导出。模型为原创风格化致敬。
 
-后续修改以 Sites 项目为编辑源。每次更新同步本仓库 main 分支，保留现有 Pages 工作流；推送后 GitHub Actions 自动发布。同步范围包含文章、脚本、样式与所有图片。
-
-完整的策展原则、版本约定、内容准入标准、资源规则、验收门槛和双端发布流程见 [`AGENTS.md`](AGENTS.md)。它是本项目后续维护的长期工作基线。
+GitHub main 是默认编辑与生产源，每次发布保留 release/vX.Y.Z 分支。固定网站地址随通过验收的 main 更新。开发与发布请先阅读 [AGENTS.md](AGENTS.md) 和 [DEPLOYMENT.md](DEPLOYMENT.md)。

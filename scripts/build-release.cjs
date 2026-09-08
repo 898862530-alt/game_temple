@@ -1,0 +1,22 @@
+// Publish content and renderer as one immutable file, so cached versions cannot mix.
+const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const root=path.join(__dirname,'..');
+const files=['games','awards','additions','late-awards','history','artworks','new-artworks','history-artworks','editorial','honors','local-images','app'];
+let js=files.map(f=>'\n/* '+f+'.js */\n'+fs.readFileSync(path.join(root,f+'.js'),'utf8')).join('\n;\n');
+const css=fs.readFileSync(path.join(root,'style.css'),'utf8');
+const hash=s=>crypto.createHash('sha256').update(s).digest('hex').slice(0,16);
+const spatial=fs.readFileSync(path.join(root,'assets/spatial/gallery.js'),'utf8');
+const spatialName='gallery-'+hash(spatial)+'.js';
+for(const file of fs.readdirSync(path.join(root,'assets/spatial')))if(/^gallery-[a-f0-9]+\.js$/.test(file))fs.unlinkSync(path.join(root,'assets/spatial',file));
+fs.writeFileSync(path.join(root,'assets/spatial',spatialName),spatial);
+js=js.replace(/assets\/spatial\/gallery(?:-[a-f0-9]+)?\.js(?:\?v=\d+)?/g,'assets/spatial/'+spatialName);
+const releaseDir=path.join(root,'assets/releases');
+fs.mkdirSync(releaseDir,{recursive:true});
+for(const file of fs.readdirSync(releaseDir))if(/^museum-[a-f0-9]+\.(js|css)$/.test(file))fs.unlinkSync(path.join(releaseDir,file));
+const script='assets/releases/museum-'+hash(js)+'.js',style='assets/releases/museum-'+hash(css)+'.css';
+fs.writeFileSync(path.join(root,script),js);fs.writeFileSync(path.join(root,style),css);
+let html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+html=html.replace(/<script src="[^"]+"[\s\S]*?<\/script>/g,'').replace(/<link rel="stylesheet" href="[^"]+">/,'<link rel="stylesheet" href="'+style+'">');
+html=html.replace('</body>','<script src="'+script+'" onerror="document.getElementById(\'screen\').innerHTML=\'<section class=&quot;page&quot;><h1>展览暂未加载完成</h1><p>请刷新页面后继续参观。</p><button onclick=&quot;location.reload()&quot;>重新加载</button></section>\'"></script></body>');
+fs.writeFileSync(path.join(root,'index.html'),html);
+console.log(JSON.stringify({script,style}));

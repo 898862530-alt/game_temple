@@ -6,7 +6,7 @@
 
 Game Temple 是一座以博物馆方式收藏电子游戏史重要作品的长期数字策展项目。它不是排行榜或新闻站，而是通过原创评论、史料研究和空间化展示，解释一款游戏为何值得被记住。
 
-当前基线（2026-09-08，第 7 版）：
+当前基线（2026-09-08，v1.1.0）：
 
 - 47 件馆藏，时间跨度 1972–2025。
 - 20 届年度游戏：2006–2012 使用 VGA 口径，2013 使用 VGX，2014–2025 使用 TGA；不得统称为“20 年 TGA”。
@@ -29,33 +29,35 @@ Game Temple 是一座以博物馆方式收藏电子游戏史重要作品的长�
 
 ## 3. 版本与协作规则
 
-- Sites 项目 `appgprj_6a9d14da7c648191abc06e9ae74b714c` 是编辑源和完整源码基线。
-- GitHub 仓库 `898862530-alt/game_temple` 的 `main` 分支是公开 GitHub Pages 镜像。
+- 根据 Ocean 本轮指令，GitHub 是长期编辑源与发布目标。Sites 项目 `appgprj_6a9d14da7c648191abc06e9ae74b714c` 保留上一版，只有用户需要时才同步。
+- GitHub 仓库 `898862530-alt/game_temple` 的 `main` 分支是生产源；GitHub Pages 固定地址自动部署最新通过验收的 main。
+- 每次交付更新 `version.json` 和 `CHANGELOG.md`，按 SemVer 递增；发布提交保留 `release/vX.Y.Z` 分支，不移动既有版本引用。回滚使用 revert 生成新提交，不 reset/force push main。
 - 两边使用独立 Git 历史，不做历史合并、强制覆盖或把一个仓库的提交 SHA 当作另一个仓库的父提交。
 - 同一轮更新只允许一个站点所有者写入。开始前检查工作区、当前线上版本和 GitHub `main`；发现未完成或来源不明的改动时先厘清，不并行覆盖。
 - 修改范围以用户明确需求为准；保留既有功能、视觉语言、移动端适配与无障碍行为。
 
 ## 4. 图片与静态资源
 
-- 运行时图片必须来自同源目录 `dist/assets/collection`，映射保存在 `dist/local-images.js`。
-- 来源与像素信息保存在 `dist/assets/collection/manifest.json`；不得依赖第三方热链，也不得无依据放大原图。
-- 每件馆藏必须同时有主图与 `dist/assets/collection/thumbs` 中的轻量缩略图。
-- 三维展馆依赖 `dist/assets/spatial` 与 `dist/assets/vendor`；发布 GitHub 时必须完整同步。
-- 发布时同步 `dist/assets/releases` 中当前内容哈希文件，删除失效的旧哈希包，防止浏览器混用旧渲染器与新文章。
+- 运行时图片必须来自同源目录 `assets/collection`，映射保存在 `local-images.js`。
+- 来源与像素信息保存在 `assets/collection/manifest.json`；不得依赖第三方热链，也不得无依据放大原图。
+- 每件馆藏必须同时有主图与 `assets/collection/thumbs` 中的轻量缩略图。
+- 三维展馆依赖 `assets/spatial` 与 `assets/vendor`；发布 GitHub 时必须完整同步。
+- 发布时同步 `assets/releases` 中当前内容哈希文件，删除失效的旧哈希包，防止浏览器混用旧渲染器与新文章。
 
 ## 5. 标准开发流程
 
-1. **确认基线**：读取本文件和 `DEPLOYMENT.md`；确认 Sites 最新版本、GitHub `main`、工作区状态及用户本轮目标。
+1. **确认基线**：读取本文件和 `DEPLOYMENT.md`；确认 GitHub `main`、工作区状态及用户本轮目标。
 2. **限定范围**：列出本轮要改的内容、页面、数据和资源；非必要不重构现有结构。
 3. **内容入馆**：按三类准入标准核验标签；补齐原创评论、史料依据、入馆理由、关联作品及图片元数据。
-4. **实现与资源本地化**：修改 `dist` 源文件；图片入库、生成缩略图并更新映射；三维内容同时考虑桌面、触控和性能降级。
+4. **实现与资源本地化**：修改仓库根目录源文件；图片入库、生成缩略图并更新映射；三维内容同时考虑桌面、触控和性能降级。
 5. **生成不可变发布包**：运行 `node scripts/build-release.cjs`，确保页面只加载一组带内容哈希的 JS / CSS。
 6. **强制验收**：依次运行：
    - `node scripts/validate.cjs`
    - `node scripts/verify-navigation.cjs`
    - `node scripts/performance-budget.cjs`
+   - `node scripts/verify-spatial.mjs`
 7. **人工核对关键体验**：至少确认首页、珍藏柜、一个年度作品、一个历史作品、一个 Ocean 精选、空间展馆和移动端首屏。用户未要求浏览器 QA 时不额外启动浏览器自动化，但仍需完成静态与脚本校验。
-8. **双端发布**：先提交完整 Sites 源码并保存对应版本；再把 `dist` 的全部运行文件镜像到 GitHub 根目录，保留 `.github/workflows/pages.yml`、`.nojekyll`、`README.md` 和本文件。
+8. **GitHub 发布**：在最新 main 上修改，更新版本与日志，完成所有校验。提交代码，保存 release/vX.Y.Z 引用，将该提交快进到 main；保留 Pages 工作流与 .nojekyll。除非用户另有要求，无需同步 Sites。
 9. **发布后确认**：等待 GitHub Pages 工作流成功，并核对公开地址能加载本次内容；记录本次变更、验收结果和两端状态。
 
 任何一步失败都不得继续宣称发布完成。修复后从受影响的最早步骤重新执行。
@@ -72,5 +74,5 @@ Game Temple 是一座以博物馆方式收藏电子游戏史重要作品的长�
 - 本次变更：新增、修改或修复了什么。
 - 内容状态：馆藏数、三类标签数、图片数是否变化。
 - 验收结果：内容校验、导航校验、性能预算是否通过。
-- 发布状态：Sites 与 GitHub Pages 是否均成功；若只发布一端，明确原因。
+- 发布状态：GitHub Pages 对应本次提交是否成功；Sites 仅在明确同步时记录。
 - 遗留事项：只记录真实未完成项，不以“后续优化”填充。
