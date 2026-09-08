@@ -1,7 +1,7 @@
 {
-  "version": "1.1.1",
-  "date": "2026-09-08",
-  "releaseRef": "release/v1.1.1",
-  "title": "物件与世界",
-  "previousCommit": "8f57bda749adf92399087c440729fa967744dd96"
+  "version": "1.2.0",
+  "date": "2026-09-09",
+  "releaseRef": "release/v1.2.0",
+  "title": "双镜头参观",
+  "previousCommit": "268dbadebccfe60202a5f3b35d484cbaf8b5169d"
 }
